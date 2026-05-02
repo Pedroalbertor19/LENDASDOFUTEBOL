@@ -1,0 +1,721 @@
+Aqui está o aplicativo profissional "Lendas da Pelada" completo, com todas as funcionalidades solicitadas:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lendas da Pelada - Futebol Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b2b1f 0%, #1a472a 100%);
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        /* gramado texture overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10% 30%, rgba(60, 110, 30, 0.2) 2%, transparent 2.5%);
+            background-size: 28px 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* header com escudo */
+        .hero {
+            background: linear-gradient(135deg, #1e3c2c, #0e2a1c);
+            border-radius: 48px 48px 32px 32px;
+            padding: 28px 20px;
+            margin-bottom: 28px;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,215,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: "⚽";
+            position: absolute;
+            bottom: -20px;
+            right: 10px;
+            font-size: 110px;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #FFE55C, #D4AF37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        h1 span {
+            font-size: 2.2rem;
+        }
+
+        .sub {
+            text-align: center;
+            color: #cfe9cd;
+            font-weight: 500;
+            margin-top: 8px;
+            background: rgba(0,0,0,0.3);
+            display: inline-block;
+            padding: 4px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* cards grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: rgba(10, 25, 18, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 20px;
+            border: 1px solid rgba(205, 170, 70, 0.4);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #FBBF24;
+        }
+
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.6rem;
+            border-left: 5px solid #FBBF24;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            color: #F9F3D9;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            background: #2c3f32;
+            border: 1px solid #c0a75a;
+            padding: 12px 14px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 500;
+            flex: 1;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #FFD966;
+            background: #1f3a2a;
+        }
+
+        button {
+            background: #D4AF37;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #0a2f1f;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: #F5C542;
+            transform: scale(0.97);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .danger-btn {
+            background: #b34e3a;
+            color: white;
+        }
+        .danger-btn:hover {
+            background: #c25e48;
+        }
+        .success-btn {
+            background: #2b7a3e;
+            color: white;
+        }
+        .success-btn:hover {
+            background: #3c9e52;
+        }
+
+        /* lista jogadores */
+        .players-list {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .player-item {
+            background: rgba(0,0,0,0.35);
+            border-radius: 60px;
+            padding: 8px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-left: 4px solid #FBBF24;
+        }
+        .player-info {
+            font-weight: 600;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .player-pos {
+            background: #FBBF24;
+            color: #1e3a2b;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .player-value {
+            color: #ffde9c;
+            font-weight: 600;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .paid-status {
+            background: #2b7a3e;
+            color: white;
+        }
+        .unpaid-status {
+            background: #a12a2a;
+            color: #ffc2c2;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            background: #334b3a;
+        }
+        .btn-del {
+            background: #9e2d2d;
+            color: white;
+        }
+        .btn-pay {
+            background: #3b8253;
+        }
+
+        /* times container */
+        .teams-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .team-card {
+            flex: 1;
+            background: rgba(0,0,0,0.4);
+            border-radius: 28px;
+            padding: 16px;
+            text-align: center;
+        }
+        .team-card h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: black;
+            display: inline-block;
+            width: 100%;
+            border-radius: 60px;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        .team-a h3 { background: #1a4c6e; color: #FFE484; }
+        .team-b h3 { background: #6e3b1a; color: #FFE484; }
+        .team-player {
+            background: rgba(255,255,210,0.1);
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 60px;
+            font-weight: 500;
+        }
+
+        .report-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .total-arrecadado {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 15px 0;
+            background: #1b3424;
+            display: inline-block;
+            padding: 6px 24px;
+            border-radius: 60px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #b1cfaa;
+        }
+
+        @media (max-width: 750px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .player-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>
+            <span>🏆</span> LENDAS DA PELADA <span>⚽</span>
+        </h1>
+        <div class="sub">Gestão de craques, pagamentos e rachão de respeito</div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Cadastro de jogadores -->
+        <div class="card">
+            <h2>📝 + Craque Novo</h2>
+            <div class="form-group">
+                <input type="text" id="playerName" placeholder="Nome completo" autocomplete="off">
+                <select id="playerPosition">
+                    <option value="Atacante">⚡ Atacante</option>
+                    <option value="Meio">🎯 Meio-campo</option>
+                    <option value="Zagueiro">🛡️ Zagueiro</option>
+                    <option value="Goleiro">🧤 Goleiro</option>
+                </select>
+                <input type="number" id="playerValue" placeholder="Valor contribuição (R$)" step="0.01">
+                <button id="addPlayerBtn">➕ Adicionar</button>
+            </div>
+            <h2 style="font-size:1.3rem; margin-top:8px;">📋 Elenco atual</h2>
+            <div id="playersListContainer" class="players-list"></div>
+            <div style="margin-top: 12px; text-align:right;">
+                <button id="deleteAllBtn" class="danger-btn">🗑️ Excluir TODOS</button>
+            </div>
+        </div>
+
+        <!-- Times do dia + sorteio -->
+        <div class="card">
+            <h2>🎲 SORTEIO DOS TIMES</h2>
+            <button id="drawTeamsBtn" style="background:#E3A018; width:100%;">⚡ SORTEAR NOVOS TIMES ⚡</button>
+            <div id="teamsDisplay" class="teams-container" style="margin-top: 20px;">
+                <div class="team-card team-a">
+                    <h3>🟦 TIME A</h3>
+                    <div id="teamAList">Nenhum jogador sorteado</div>
+                </div>
+                <div class="team-card team-b">
+                    <h3>🟥 TIME B</h3>
+                    <div id="teamBList">Nenhum jogador sorteado</div>
+                </div>
+            </div>
+            <div class="report-buttons">
+                <button id="pdfLineupBtn">📄 PDF da Escalação</button>
+            </div>
+        </div>
+
+        <!-- Financeiro e lembretes -->
+        <div class="card">
+            <h2>💰 CONTROLE FINANCEIRO</h2>
+            <div style="text-align: center;">
+                <div class="total-arrecadado">💰 Total arrecadado: R$ <span id="totalPaidSpan">0.00</span></div>
+                <button id="markAllPaidBtn" class="success-btn">✅ Marcar todos como pagos</button>
+                <button id="pdfPaymentReportBtn" style="margin-left: 8px; background:#2c5f3a;">📊 Relatório PDF (Pagamentos)</button>
+            </div>
+            <div style="margin-top: 18px; background: #1f3328; border-radius: 28px; padding: 12px;">
+                <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+                    <span>⚠️ Lembrete pendências:</span>
+                    <span id="debtorsWarning" style="font-weight: bold; color: #FFB347;">Nenhum devedor</span>
+                </div>
+                <div id="debtorsList" style="font-size:0.8rem; margin-top: 10px; text-align:center;"></div>
+            </div>
+        </div>
+    </div>
+    <footer>⚽ LENDAS DA PELADA — Organização, raça e pagamento em dia 🔥</footer>
+</div>
+
+<script>
+    // ---------- DADOS ----------
+    let players = [];
+
+    // Carregar do localStorage se existir
+    function loadFromStorage() {
+        const stored = localStorage.getItem("lendasPeladaDB");
+        if(stored) {
+            try {
+                players = JSON.parse(stored);
+            } catch(e) { players = []; }
+        } else {
+            // dados iniciais de exemplo
+            players = [
+                { name: "Ronaldo Fenômeno", position: "Atacante", value: 25.00, paid: true },
+                { name: "Zico Pelada", position: "Meio", value: 20.00, paid: false },
+                { name: "Cafu", position: "Zagueiro", value: 18.00, paid: false },
+                { name: "Dida", position: "Goleiro", value: 22.00, paid: true }
+            ];
+        }
+    }
+
+    function saveToStorage() {
+        localStorage.setItem("lendasPeladaDB", JSON.stringify(players));
+    }
+
+    // renderização completa
+    function renderAll() {
+        renderPlayersList();
+        updateTotalAndReminders();
+        // manter times já sorteados? não resetamos o sorteio, a menos que clique em sortear. 
+        // Mas se o usuário apagar jogadores, podemos limpar times para evitar inconsistência.
+        // Idealmente, se o elenco mudar, podemos limpar os times sorteados (avisar visualmente)
+        const teamADiv = document.getElementById("teamAList");
+        const teamBDiv = document.getElementById("teamBList");
+        // Se os times atuais contém jogadores que não existem mais => precisamos limpar?
+        // verificação simples: se algum jogador do time A nao estiver no array, reseta display.
+        let currentTeamA = getCurrentTeamArray('A');
+        let currentTeamB = getCurrentTeamArray('B');
+        let allCurrentPlayers = [...currentTeamA, ...currentTeamB];
+        let existsAll = allCurrentPlayers.every(p => players.some(jog => jog.name === p.name && jog.position === p.position));
+        if(!existsAll && players.length > 0) {
+            // reseta visual dos times
+            document.getElementById("teamAList").innerHTML = "<em>Times desatualizados, clique em sortear</em>";
+            document.getElementById("teamBList").innerHTML = "<em>Times desatualizados, clique em sortear</em>";
+        } else if(players.length === 0) {
+            document.getElementById("teamAList").innerHTML = "Elenco vazio";
+            document.getElementById("teamBList").innerHTML = "Elenco vazio";
+        } else {
+            // mantém times renderizados com dados atuais (nomes atualizados)
+            renderTeamsFromMemory();
+        }
+    }
+
+    function getCurrentTeamArray(team) {
+        const container = document.getElementById(team === 'A' ? "teamAList" : "teamBList");
+        if(!container) return [];
+        const playerDivs = container.querySelectorAll('.team-player');
+        let teamPlayers = [];
+        playerDivs.forEach(div => {
+            let name = div.getAttribute("data-name");
+            let pos = div.getAttribute("data-pos");
+            if(name && pos) teamPlayers.push({ name, position: pos });
+        });
+        return teamPlayers;
+    }
+
+    function renderTeamsFromMemory() {
+        // pega os valores atuais do DOM que foram salvos pelos sorteios antigos, mas precisamos garantir que os dados estejam sincronizados
+        // na verdade, temos variável global lastDrawnTeams? Vamos criar uma variável para armazenar últimos times sorteados
+        if(window.lastTeamAData && window.lastTeamBData) {
+            displayTeams(window.lastTeamAData, window.lastTeamBData);
+        } else {
+            // tenta recuperar do DOM salvo
+            let teamANames = [];
+            let teamBNames = [];
+            const aDivs = document.querySelectorAll('#teamAList .team-player');
+            const bDivs = document.querySelectorAll('#teamBList .team-player');
+            aDivs.forEach(div => {
+                let name = div.getAttribute("data-name");
+                let pos = div.getAttribute("data-pos");
+                if(name && pos) teamANames.push(players.find(p => p.name === name && p.position === pos));
+            });
+            bDivs.forEach(div => {
+                let name = div.getAttribute("data-name");
+                let pos = div.getAttribute("data-pos");
+                if(name && pos) teamBNames.push(players.find(p => p.name === name && p.position === pos));
+            });
+            if(teamANames.length || teamBNames.length) displayTeams(teamANames.filter(p=>p), teamBNames.filter(p=>p));
+        }
+    }
+
+    function displayTeams(teamAarray, teamBarray) {
+        const teamADiv = document.getElementById("teamAList");
+        const teamBDiv = document.getElementById("teamBList");
+        if(!teamADiv) return;
+        if(teamAarray.length === 0 && teamBarray.length === 0 && players.length>0){
+            teamADiv.innerHTML = "<em>Clique em Sortear Times</em>";
+            teamBDiv.innerHTML = "<em>Clique em Sortear Times</em>";
+            return;
+        }
+        teamADiv.innerHTML = teamAarray.map(p => `<div class="team-player" data-name="${escapeHtml(p.name)}" data-pos="${p.position}">⚽ ${escapeHtml(p.name)} - <span style="color:#FFD966">${p.position}</span> ${p.paid ? '✅' : '⚠️'}</div>`).join("");
+        teamBDiv.innerHTML = teamBarray.map(p => `<div class="team-player" data-name="${escapeHtml(p.name)}" data-pos="${p.position}">⚽ ${escapeHtml(p.name)} - <span style="color:#FFD966">${p.position}</span> ${p.paid ? '✅' : '⚠️'}</div>`).join("");
+        // guardar referência
+        window.lastTeamAData = [...teamAarray];
+        window.lastTeamBData = [...teamBarray];
+    }
+
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderPlayersList() {
+        const container = document.getElementById("playersListContainer");
+        if(!container) return;
+        if(players.length === 0) {
+            container.innerHTML = "<div style='text-align:center;padding:20px'>Nenhum jogador cadastrado. Adicione um craque!</div>";
+            return;
+        }
+        container.innerHTML = "";
+        players.forEach((p, idx) => {
+            const div = document.createElement("div");
+            div.className = "player-item";
+            div.innerHTML = `
+                <div class="player-info">
+                    <strong>${escapeHtml(p.name)}</strong>
+                    <span class="player-pos">${p.position}</span>
+                    <span class="player-value">R$ ${p.value.toFixed(2)}</span>
+                    <span class="status-badge ${p.paid ? 'paid-status' : 'unpaid-status'}">${p.paid ? 'PAGO' : 'PENDENTE'}</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-sm btn-pay" data-idx="${idx}" data-action="toggle">💰 ${p.paid ? 'Desmarcar' : 'Pagar'}</button>
+                    <button class="btn-sm btn-del" data-idx="${idx}" data-action="delete">🗑️ Excluir</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        document.querySelectorAll("[data-action='toggle']").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const idx = parseInt(btn.getAttribute("data-idx"));
+                if(!isNaN(idx) && players[idx]) {
+                    players[idx].paid = !players[idx].paid;
+                    saveToStorage();
+                    renderAll();
+                }
+            });
+        });
+        document.querySelectorAll("[data-action='delete']").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const idx = parseInt(btn.getAttribute("data-idx"));
+                if(!isNaN(idx) && players[idx]) {
+                    players.splice(idx, 1);
+                    saveToStorage();
+                    renderAll();
+                }
+            });
+        });
+    }
+
+    function updateTotalAndReminders() {
+        const totalPaid = players.filter(p => p.paid).reduce((acc, p) => acc + p.value, 0);
+        document.getElementById("totalPaidSpan").innerText = totalPaid.toFixed(2);
+        const debtors = players.filter(p => !p.paid);
+        const warningSpan = document.getElementById("debtorsWarning");
+        const debtorsDiv = document.getElementById("debtorsList");
+        if(debtors.length === 0) {
+            warningSpan.innerHTML = "✅ Ninguém em débito!";
+            debtorsDiv.innerHTML = "";
+        } else {
+            warningSpan.innerHTML = `⚠️ ${debtors.length} jogador(es) com pendência`;
+            debtorsDiv.innerHTML = debtors.map(d => `${escapeHtml(d.name)} (${d.position}) - R$ ${d.value.toFixed(2)}`).join("  |  ");
+        }
+    }
+
+    // SORTEIO EQUILIBRADO? opcional: random puro com ordem
+    function drawTeamsFunction() {
+        if(players.length === 0) {
+            alert("Elenco vazio! Adicione jogadores antes de sortear.");
+            return;
+        }
+        let available = [...players];
+        for(let i=available.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i+1));
+            [available[i], available[j]] = [available[j], available[i]];
+        }
+        let teamA = [];
+        let teamB = [];
+        available.forEach((p, index) => {
+            if(index % 2 === 0) teamA.push(p);
+            else teamB.push(p);
+        });
+        displayTeams(teamA, teamB);
+        window.lastTeamAData = teamA;
+        window.lastTeamBData = teamB;
+        saveToStorage();
+    }
+
+    // Marcadores pagos todos
+    function markAllPaid() {
+        players.forEach(p => p.paid = true);
+        saveToStorage();
+        renderAll();
+    }
+
+    // Funções para gerar PDF (escalação e relatório)
+    function generateLineupPDF() {
+        if(!window.lastTeamAData || !window.lastTeamBData || players.length===0) {
+            alert("Primeiro sorteie os times clicando em 'SORTEAR NOVOS TIMES'");
+            return;
+        }
+        const element = document.createElement("div");
+        element.style.padding = "20px";
+        element.style.fontFamily = "Arial, sans-serif";
+        element.style.backgroundColor = "#f5f5e6";
+        element.style.color = "#1e3a2b";
+        element.innerHTML = `
+            <div style="text-align:center;">
+                <h1 style="color:#B8860B;">🏆 LENDAS DA PELADA 🏆</h1>
+                <h2>📋 ESCALAÇÃO DO JOGO 📋</h2>
+                <p>Data: ${new Date().toLocaleDateString()}</p>
+                <hr/>
+            </div>
+            <div style="display:flex; justify-content:space-between; gap:20px; margin-top:30px;">
+                <div style="flex:1; background:#D9E3E8; padding:15px; border-radius:20px;">
+                    <h2 style="color:#004e92">🟦 TIME A</h2>
+                    ${window.lastTeamAData.map(p => `<p>⚽ ${p.name} - ${p.position} ${p.paid ? '(PAGO)' : '(PENDENTE)'}</p>`).join("")}
+                </div>
+                <div style="flex:1; background:#F7E1C0; padding:15px; border-radius:20px;">
+                    <h2 style="color:#9b4b24">🟥 TIME B</h2>
+                    ${window.lastTeamBData.map(p => `<p>⚽ ${p.name} - ${p.position} ${p.paid ? '(PAGO)' : '(PENDENTE)'}</p>`).join("")}
+                </div>
+            </div>
+            <footer style="margin-top:40px; text-align:center;">Relatório gerado pelo app Lendas da Pelada</footer>
+        `;
+        const opt = { margin: 0.5, filename: `escalacao_lendas_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    function generatePaymentReportPDF() {
+        if(players.length === 0){
+            alert("Nenhum jogador cadastrado para gerar relatório financeiro.");
+            return;
+        }
+        const paidList = players.filter(p => p.paid);
+        const unpaidList = players.filter(p => !p.paid);
+        const totalPaid = paidList.reduce((s, p) => s+p.value, 0);
+        const totalExpected = players.reduce((s,p) => s+p.value, 0);
+        const element = document.createElement("div");
+        element.style.padding = "20px";
+        element.style.fontFamily = "sans-serif";
+        element.style.background = "#fef7e0";
+        element.innerHTML = `
+            <div style="text-align:center;">
+                <h1>📄 RELATÓRIO DE PAGAMENTOS</h1>
+                <h2>LENDAS DA PELADA</h2>
+                <p>Emitido em: ${new Date().toLocaleString()}</p>
+                <hr/>
+            </div>
+            <div><strong>Status financeiro:</strong> Total arrecadado: R$ ${totalPaid.toFixed(2)} de R$ ${totalExpected.toFixed(2)}</div>
+            <h3>✅ Jogadores com pagamento confirmado (${paidList.length})</h3>
+            ${paidList.map(p => `<p>💰 ${p.name} - ${p.position} - R$ ${p.value.toFixed(2)}</p>`).join("") || "<p>Nenhum</p>"}
+            <h3>⚠️ Pendências (${unpaidList.length})</h3>
+            ${unpaidList.map(p => `<p>❌ ${p.name} - ${p.position} - DEVE R$ ${p.value.toFixed(2)}</p>`).join("") || "<p>Nenhum devedor</p>"}
+            <footer><small>App Lendas da Pelada - Gerencie sua pelada</small></footer>
+        `;
+        const opt = { margin: 0.5, filename: `relatorio_pagamentos_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    // Adicionar jogador
+    function addPlayerHandler() {
+        const name = document.getElementById("playerName").value.trim();
+        const position = document.getElementById("playerPosition").value;
+        let value = parseFloat(document.getElementById("playerValue").value);
+        if(!name) { alert("Informe o nome do craque!"); return; }
+        if(isNaN(value) || value <= 0) { alert("Valor da contribuição deve ser maior que zero."); return; }
+        players.push({ name: name, position: position, value: value, paid: false });
+        saveToStorage();
+        document.getElementById("playerName").value = "";
+        document.getElementById("playerValue").value = "";
+        renderAll();
+        // opcional: limpar times sorteados visualmente? deixamos como aviso no display
+        if(window.lastTeamAData) window.lastTeamAData = null;
+        displayTeams([], []);
+    }
+
+    function deleteAllPlayers() {
+        if(confirm("⚠️ ATENÇÃO! Isso irá REMOVER TODOS os jogadores. Tem certeza?")) {
+            players = [];
+            saveToStorage();
+            window.lastTeamAData = [];
+            window.lastTeamBData = [];
+            renderAll();
+        }
+    }
+
+    // inicializacao
+    loadFromStorage();
+    renderAll();
+    // Se não houver times salvos, garantir displays iniciais
+    if(players.length > 0 && (!window.lastTeamAData || window.lastTeamAData.length===0)) {
+        displayTeams([], []);
+    } else {
+        renderTeamsFromMemory();
+    }
+
+    document.getElementById("addPlayerBtn").addEventListener("click", addPlayerHandler);
+    document.getElementById("drawTeamsBtn").addEventListener("click", () => { drawTeamsFunction(); });
+    document.getElementById("markAllPaidBtn").addEventListener("click", markAllPaid);
+    document.getElementById("pdfLineupBtn").addEventListener("click", generateLineupPDF);
+    document.getElementById("pdfPaymentReportBtn").addEventListener("click", generatePaymentReportPDF);
+    document.getElementById("deleteAllBtn").addEventListener("click", deleteAllPlayers);
+</script>
+</body>
+</html>
+```
